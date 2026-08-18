@@ -1,0 +1,98 @@
+name: CI
+
+on:
+    push:
+        branches: [main, 'feature/**', 'fix/**', 'refactor/**', 'chore/**']
+    pull_request:
+        branches: [main]
+
+permissions:
+    contents: read
+
+jobs:
+    backend:
+        name: PHP quality and tests
+        runs-on: ubuntu-latest
+        services:
+            postgres:
+                image: postgres:17-alpine
+                env:
+                    POSTGRES_DB: eduxora_testing
+                    POSTGRES_USER: eduxora
+                    POSTGRES_PASSWORD: eduxora_ci_only
+                ports:
+                    - 5432:5432
+                options: >-
+                    --health-cmd "pg_isready -U eduxora -d eduxora_testing"
+                    --health-interval 5s
+                    --health-timeout 5s
+                    --health-retries 10
+            redis:
+                image: redis:7.4-alpine
+                ports:
+                    - 6379:6379
+                options: >-
+                    --health-cmd "redis-cli ping"
+                    --health-interval 5s
+                    --health-timeout 3s
+                    --health-retries 10
+        env:
+            APP_ENV: testing
+            APP_DEBUG: 'false'
+            APP_KEY: base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+            DB_CONNECTION: pgsql
+            DB_HOST: 127.0.0.1
+            DB_PORT: 5432
+            DB_DATABASE: eduxora_testing
+            DB_USERNAME: eduxora
+            DB_PASSWORD: eduxora_ci_only
+            REDIS_CLIENT: phpredis
+            REDIS_HOST: 127.0.0.1
+            CACHE_STORE: redis
+            SESSION_DRIVER: redis
+            QUEUE_CONNECTION: redis
+            MAIL_MAILER: array
+        steps:
+            - uses: actions/checkout@v4
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.4'
+                  extensions: intl, pdo_pgsql, redis, zip
+                  coverage: none
+            - uses: ramsey/composer-install@v3
+              with:
+                  dependency-versions: locked
+            - name: Validate Composer metadata
+              run: composer validate --strict
+            - name: Laravel environment
+              run: php artisan about --only=environment
+            - name: Check code style
+              run: composer lint
+            - name: Static analysis
+              run: composer analyse
+            - name: Validate migrations and rollback
+              run: php artisan migrate:fresh --force && php artisan migrate:rollback --force && php artisan migrate --force
+            - name: Backend tests
+              run: composer test
+
+    frontend:
+        name: Frontend quality and build
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: '24'
+                  cache: npm
+            - name: Install locked dependencies
+              run: npm ci --no-audit --no-fund
+            - name: ESLint
+              run: npm run lint
+            - name: Prettier
+              run: npm run format:check
+            - name: TypeScript
+              run: npm run typecheck
+            - name: Frontend tests
+              run: npm run test
+            - name: Production build
+              run: npm run build

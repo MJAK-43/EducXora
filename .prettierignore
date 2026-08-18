@@ -1,0 +1,9 @@
+vendor
+node_modules
+public/build
+storage
+bootstrap/cache
+coverage
+composer.lock
+package-lock.json
+EduXora_CahierDesCharges.pdf

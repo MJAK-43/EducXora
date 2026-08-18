@@ -1,0 +1,145 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    min-width: 20rem;
+    background: var(--color-background);
+    color: var(--color-text-primary);
+    font-family: var(--font-family-sans);
+    font-size: 100%;
+    line-height: var(--line-height-body);
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    background: var(--color-background);
+}
+
+button,
+input,
+select,
+textarea {
+    color: inherit;
+    font: inherit;
+}
+
+button,
+[role='button'] {
+    -webkit-tap-highlight-color: transparent;
+}
+
+button:not(:disabled),
+select:not(:disabled),
+input[type='checkbox']:not(:disabled),
+input[type='radio']:not(:disabled) {
+    cursor: pointer;
+}
+
+img,
+svg {
+    display: block;
+    max-width: 100%;
+}
+
+a {
+    color: var(--color-primary);
+}
+
+:focus {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-offset);
+}
+
+@supports selector(:focus-visible) {
+    :focus:not(:focus-visible) {
+        outline: none;
+    }
+
+    :focus-visible {
+        outline: var(--focus-outline);
+        outline-offset: var(--focus-offset);
+    }
+}
+
+::selection {
+    background: var(--color-primary-soft);
+    color: var(--color-text-primary);
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.text-display,
+.text-h1,
+.text-h2,
+.text-h3 {
+    margin: 0;
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: -0.025em;
+}
+
+.text-display {
+    font-size: var(--font-size-display);
+    line-height: var(--line-height-tight);
+}
+.text-h1 {
+    font-size: var(--font-size-heading-1);
+    line-height: var(--line-height-heading);
+}
+.text-h2 {
+    font-size: var(--font-size-heading-2);
+    line-height: var(--line-height-heading);
+}
+.text-h3 {
+    font-size: var(--font-size-heading-3);
+    line-height: var(--line-height-heading);
+}
+.text-body,
+.text-body-small,
+.text-caption {
+    margin: 0;
+}
+.text-body {
+    font-size: var(--font-size-body);
+}
+.text-body-small {
+    font-size: var(--font-size-body-small);
+}
+.text-caption {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-caption);
+}
+
+@media (max-width: 47.99rem) {
+    :root {
+        --font-size-display: 2rem;
+        --font-size-heading-1: 1.5rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}
