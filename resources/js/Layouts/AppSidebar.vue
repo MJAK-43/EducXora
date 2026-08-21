@@ -3,6 +3,7 @@ import { Link, usePage } from '@inertiajs/vue3';
 import {
     Building2,
     CalendarDays,
+    ClipboardCheck,
     GraduationCap,
     KeyRound,
     Landmark,
@@ -21,6 +22,7 @@ const auth = page.props.auth as
           canViewLearners?: boolean;
           canViewGroups?: boolean;
           canViewSchedule?: boolean;
+          canViewAttendance?: boolean;
       }
     | undefined;
 const navigation: Array<{ label: string; href: string; icon: Component; visible?: boolean }> = [
@@ -28,6 +30,12 @@ const navigation: Array<{ label: string; href: string; icon: Component; visible?
     { label: 'Apprenants', href: '/learners', icon: GraduationCap, visible: auth?.canViewLearners },
     { label: 'Groupes', href: '/groups', icon: LibraryBig, visible: auth?.canViewGroups },
     { label: 'Planning', href: '/schedule', icon: CalendarDays, visible: auth?.canViewSchedule },
+    {
+        label: 'Présences',
+        href: '/attendance',
+        icon: ClipboardCheck,
+        visible: auth?.canViewAttendance,
+    },
     { label: 'Utilisateurs', href: '/organization/users', icon: UsersRound },
     { label: 'Rôles et permissions', href: '/organization/roles', icon: KeyRound },
     { label: 'Organisation', href: '/organization/settings', icon: Settings2 },

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Domain\Attendance\Models\AttendanceSheet;
 use App\Domain\Learner\Actions\ArchiveLearner;
 use App\Domain\Learner\Actions\CreateLearner;
 use App\Domain\Learner\Actions\RestoreLearner;
@@ -85,6 +86,7 @@ final readonly class LearnerController
                 'update' => $request->user()->can('update', $learner),
                 'archive' => $request->user()->can('archive', $learner),
                 'restore' => $request->user()->can('restore', $learner),
+                'viewAttendanceHistory' => $request->user()->can('viewLearnerHistory', AttendanceSheet::class),
             ],
         ]);
     }

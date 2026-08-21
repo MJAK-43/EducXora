@@ -28,6 +28,12 @@ Le `Dockerfile` multi-stage produit une cible de développement et une cible de 
 
 Le frontend Phase 1 se limite à `resources/js/Components/Ui`, `resources/js/Layouts`, la page temporaire `Home` et le catalogue local `Dev/UiKit`. Aucun dossier de domaine, modèle centre, tenant middleware, rôle, permission ou route métier n'a été ajouté.
 
+## Domaine Attendance — Phase 5
+
+`app/Domain/Attendance` réutilise `CourseSession` comme unique représentation d’une séance. Une feuille tenant-scoped photographie les références groupe/enseignant et son roster historique au démarrage. Les mutations passent par des Actions transactionnelles ; la validation verrouille définitivement le brouillon et les modifications suivantes passent par une correction métier append-only.
+
+Les historiques sont bornés par période et paginés. Les indicateurs Groupe et le taux apprenant sont calculés côté serveur sur les seules feuilles validées et séances non annulées. L’enseignant reste limité aux séances de sa propre adhésion ; les rapports tenant complets exigent `attendance.view_reports`. Voir ADR-016.
+
 ## Principes directeurs
 
 1. Isolation tenant et autorisation avant ergonomie.

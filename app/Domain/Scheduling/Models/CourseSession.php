@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Scheduling\Models;
 
+use App\Domain\Attendance\Models\AttendanceSheet;
 use App\Domain\Learning\Models\Group;
 use App\Domain\Scheduling\Enums\CourseSessionStatus;
 use App\Models\Concerns\BelongsToTenant;
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 
 /**
@@ -64,6 +66,12 @@ final class CourseSession extends Model
     public function teacherMembership(): BelongsTo
     {
         return $this->belongsTo(OrganizationMembership::class, 'teacher_membership_id');
+    }
+
+    /** @return HasOne<AttendanceSheet, $this> */
+    public function attendanceSheet(): HasOne
+    {
+        return $this->hasOne(AttendanceSheet::class);
     }
 
     /** @return BelongsTo<User, $this> */

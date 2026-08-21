@@ -27,6 +27,14 @@ Les suites `AuthenticationTest`, `TenancyAndRbacTest` et `InvitationAndAuditTest
 
 La suite active totalise 21 tests backend / 77 assertions et 8 tests frontend. PostgreSQL et Redis réels sont utilisés. Le typecheck Vue, ESLint, Prettier, Larastan, Pint et le build Vite sont bloquants. La vérification navigateur responsive Phase 2 est **NOT TESTED** dans cette session faute de Node REPL exposé ; la CI GitHub distante est **NOT TESTED** car aucun commit/push ne fait partie de cette livraison.
 
+## Couverture Phase 5
+
+`AttendanceManagementTest` couvre roster historique serveur, feuille unique, séance annulée, les statuts présent/absent/excusé, injection d’apprenant ou d’enseignant, brouillon, présence enseignant, validation atomique, double validation, verrouillage, corrections motivées, audit, historiques, taux et matrice tenant A/B. Il couvre aussi le périmètre propre de l’enseignant et le refus du rôle Accountant.
+
+`AttendancePages.spec.ts` vérifie le rendu des trois statuts, la soumission du brouillon, l’état validé/verrouillé et la correction motivée vers la feuille ciblée. Les chiffres globaux sont consignés dans `docs/phases/phase-5-report.md` après la gate complète.
+
+La validation visuelle réelle à 375, 390, 768, 1024, 1280 et 1440 px ainsi que Safari iOS 13 reste **NOT TESTED**.
+
 ## Principes
 
 Tester les invariants au niveau le moins coûteux, puis couvrir les frontières réellement risquées. Tous les tests utilisent PostgreSQL pour les comportements qui en dépendent ; SQLite n'est pas un substitut pour FK composites, contraintes d'exclusion, verrouillage ou RLS.

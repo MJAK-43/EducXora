@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Domain\Attendance\Models\AttendanceSheet;
 use App\Domain\Learner\Models\Learner;
 use App\Domain\Learning\Models\Group;
 use App\Domain\Scheduling\Models\CourseSession;
@@ -10,6 +11,7 @@ use App\Models\Organization;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\UserInvitation;
+use App\Policies\AttendanceSheetPolicy;
 use App\Policies\AuditLogPolicy;
 use App\Policies\CourseSessionPolicy;
 use App\Policies\GroupPolicy;
@@ -46,6 +48,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Role::class, RolePolicy::class);
         Gate::policy(UserInvitation::class, UserInvitationPolicy::class);
         Gate::policy(AuditLog::class, AuditLogPolicy::class);
+        Gate::policy(AttendanceSheet::class, AttendanceSheetPolicy::class);
         Gate::policy(Learner::class, LearnerPolicy::class);
         Gate::policy(Group::class, GroupPolicy::class);
         Gate::policy(CourseSession::class, CourseSessionPolicy::class);

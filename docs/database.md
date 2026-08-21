@@ -12,6 +12,12 @@ Les UUID sont utilisés dans les URLs ; les identifiants bigint restent réserv�
 
 Ce document décrit les agrégats et contraintes attendus, pas encore des migrations. Les noms définitifs seront validés à chaque phase.
 
+## Présences implémentées en Phase 5
+
+Les tables effectives sont `attendance_sheets`, `learner_attendances`, `teacher_attendances` et `attendance_corrections`. Chaque table métier porte `organization_id`; les FK composites empêchent toute référence à une séance, un groupe, une adhésion ou un apprenant d’une autre organisation.
+
+Une feuille est unique par organisation/séance. Un relevé apprenant est unique par feuille/apprenant et un relevé enseignant par feuille. La feuille suit `draft → validated`; une correction ne crée pas de troisième état et reste une ligne append-only structurée. Le futur `offline_sync_commands` n’est pas créé en Phase 5.
+
 ## Conventions
 
 - PostgreSQL, encodage UTF-8.

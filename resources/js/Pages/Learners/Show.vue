@@ -22,7 +22,7 @@ interface Learner {
 }
 const props = defineProps<{
     learner: Learner;
-    can: { update: boolean; archive: boolean; restore: boolean };
+    can: { update: boolean; archive: boolean; restore: boolean; viewAttendanceHistory: boolean };
 }>();
 const page = usePage();
 const flash = page.props.flash as { status?: string } | undefined;
@@ -68,6 +68,17 @@ function restoreLearner(): void {
                 </div></template
             >
         </PageHeader>
+        <UiCard
+            v-if="can.viewAttendanceHistory"
+            class="attendance-entry"
+            ><strong>Présences</strong>
+            <p>Consultez l’historique validé et le taux de présence de cet apprenant.</p>
+            <Link
+                class="learner-primary-link"
+                :href="`/learners/${learner.uuid}/attendance`"
+                >Voir les présences</Link
+            ></UiCard
+        >
         <UiAlert
             v-if="flash?.status"
             tone="success"
@@ -193,6 +204,9 @@ function restoreLearner(): void {
 }
 .learner-future {
     margin-top: var(--space-6);
+}
+.attendance-entry {
+    margin-bottom: var(--space-6);
 }
 .learner-future p {
     color: var(--color-text-secondary);

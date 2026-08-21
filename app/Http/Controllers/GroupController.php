@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Domain\Attendance\Queries\GroupAttendanceSummaryQuery;
 use App\Domain\Learner\Enums\LearnerLanguage;
 use App\Domain\Learner\Enums\LearnerLevel;
 use App\Domain\Learner\Enums\LearnerStatus;
@@ -32,6 +33,7 @@ final readonly class GroupController
 {
     public function __construct(
         private GroupIndexQuery $indexQuery,
+        private GroupAttendanceSummaryQuery $attendanceSummary,
         private TeacherMembershipQuery $teachers,
         private CreateGroup $createGroup,
         private UpdateGroup $updateGroup,
@@ -79,6 +81,9 @@ final readonly class GroupController
             'group' => GroupPresenter::detail($group),
             'candidates' => $this->candidates($group, (string) $request->query('candidate_search', '')),
             'candidateSearch' => (string) $request->query('candidate_search', ''),
+            'attendanceSummary' => $request->user()->can('attendance.view_reports')
+                ? $this->attendanceSummary->forGroup($group)
+                : null,
             'can' => ['update' => $request->user()->can('update', $group), 'archive' => $request->user()->can('archive', $group), 'restore' => $request->user()->can('restore', $group), 'manageLearners' => $request->user()->can('manageLearners', $group)],
         ]);
     }

@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\AttendanceHistoryController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationController;
@@ -65,6 +67,7 @@ Route::middleware(['auth', 'auth.session', 'active', 'fresh.session'])->group(fu
             Route::get('/learners/create', [LearnerController::class, 'create'])->name('learners.create');
             Route::post('/learners', [LearnerController::class, 'store'])->name('learners.store');
             Route::get('/learners/export', LearnerExportController::class)->middleware('throttle:10,1')->name('learners.export');
+            Route::get('/learners/{learnerUuid}/attendance', [AttendanceHistoryController::class, 'learner'])->name('learners.attendance');
             Route::get('/learners/{learnerUuid}', [LearnerController::class, 'show'])->name('learners.show');
             Route::get('/learners/{learnerUuid}/edit', [LearnerController::class, 'edit'])->name('learners.edit');
             Route::patch('/learners/{learnerUuid}', [LearnerController::class, 'update'])->name('learners.update');
@@ -87,6 +90,16 @@ Route::middleware(['auth', 'auth.session', 'active', 'fresh.session'])->group(fu
             Route::get('/schedule/{sessionUuid}/edit', [CourseSessionController::class, 'edit'])->name('schedule.edit');
             Route::patch('/schedule/{sessionUuid}', [CourseSessionController::class, 'update'])->name('schedule.update');
             Route::patch('/schedule/{sessionUuid}/cancel', [CourseSessionController::class, 'cancel'])->name('schedule.cancel');
+            Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
+            Route::post('/attendance/sessions/{sessionUuid}', [AttendanceController::class, 'start'])->name('attendance.start');
+            Route::get('/attendance/teachers/{membershipUuid}', [AttendanceHistoryController::class, 'teacher'])->name('attendance.teachers.history');
+            Route::get('/attendance/{sheetUuid}', [AttendanceController::class, 'show'])->name('attendance.show');
+            Route::get('/attendance/{sheetUuid}/take', [AttendanceController::class, 'take'])->name('attendance.take');
+            Route::patch('/attendance/{sheetUuid}/draft', [AttendanceController::class, 'updateDraft'])->name('attendance.draft.update');
+            Route::patch('/attendance/{sheetUuid}/teacher', [AttendanceController::class, 'recordTeacher'])->name('attendance.teacher.update');
+            Route::patch('/attendance/{sheetUuid}/validate', [AttendanceController::class, 'validate'])->name('attendance.validate');
+            Route::patch('/attendance/{sheetUuid}/learners/{learnerAttendanceUuid}/correct', [AttendanceController::class, 'correctLearner'])->name('attendance.learners.correct');
+            Route::patch('/attendance/{sheetUuid}/teacher/correct', [AttendanceController::class, 'correctTeacher'])->name('attendance.teacher.correct');
             Route::get('/organization/settings', [OrganizationSettingsController::class, 'edit'])->name('organization.settings.edit');
             Route::patch('/organization/settings', [OrganizationSettingsController::class, 'update'])->middleware('password.confirm')->name('organization.settings.update');
             Route::get('/organization/users', [OrganizationUserController::class, 'index'])->name('organization.users.index');

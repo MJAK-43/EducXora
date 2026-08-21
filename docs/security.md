@@ -54,6 +54,14 @@ La base renforce l'isolation par FK composites. PostgreSQL RLS est ajoutée apr�
 - MFA obligatoire pour Super Admin, fortement recommandé pour Directeur ; exigence finale à confirmer.
 - Rate limits adaptatifs pour login, reset et MFA, avec journalisation sans secret.
 
+## Protection des présences — Phase 5
+
+- La séance, le groupe, l’enseignant et le roster sont dérivés côté serveur sous `TenantContext`; tous leurs identifiants de substitution sont interdits dans les payloads.
+- Les FK composites et unicités PostgreSQL complètent le scope global fail-closed et `AttendanceSheetPolicy`.
+- Un enseignant ne peut agir que sur les feuilles de sa propre adhésion ; les corrections exigent une permission administrative distincte.
+- Une feuille validée est verrouillée au backend. Les corrections exigent un motif, conservent avant/après/auteur/date et produisent un audit minimal.
+- Les tests tenant A/B couvrent consultation, démarrage, validation, correction et historique ; un apprenant hors roster est rejeté.
+
 ## RBAC et policies
 
 Les permissions atomiques (`students.view`, `payments.refund`, etc.) sont accordées aux rôles d'une adhésion. Les rôles initiaux Directeur, Secrétaire/Caissière et Enseignant sont des modèles éditables dans les limites de séparation des tâches définies. Les policies contrôlent à la fois permission, tenant, état de ressource et relation métier (par exemple enseignant affecté au groupe).

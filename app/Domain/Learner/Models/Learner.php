@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Learner\Models;
 
+use App\Domain\Attendance\Models\LearnerAttendance;
 use App\Domain\Learner\Enums\LearnerLanguage;
 use App\Domain\Learner\Enums\LearnerLevel;
 use App\Domain\Learner\Enums\LearnerStatus;
@@ -16,6 +17,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 /**
@@ -74,6 +76,12 @@ final class Learner extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /** @return HasMany<LearnerAttendance, $this> */
+    public function attendances(): HasMany
+    {
+        return $this->hasMany(LearnerAttendance::class);
     }
 
     /** @return BelongsTo<User, $this> */

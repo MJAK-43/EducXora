@@ -27,9 +27,18 @@ interface Group {
     status: string;
     members: Member[];
 }
+interface AttendanceSummary {
+    sessions: number;
+    records: number;
+    present: number;
+    absent: number;
+    excused: number;
+    rate: number;
+}
 const props = defineProps<{
     group: Group;
     candidates: Candidate[];
+    attendanceSummary: AttendanceSummary | null;
     can: { update: boolean; archive: boolean; restore: boolean; manageLearners: boolean };
 }>();
 function archive(): void {
@@ -73,6 +82,32 @@ function restore(): void {
                 </div></template
             >
         </PageHeader>
+        <UiCard
+            v-if="attendanceSummary"
+            class="attendance-summary"
+            ><template #header><h2>Présences validées</h2></template>
+            <div>
+                <p>
+                    <strong>{{ attendanceSummary.rate }} %</strong><span>Taux de présence</span>
+                </p>
+                <p>
+                    <strong>{{ attendanceSummary.sessions }}</strong
+                    ><span>Séances</span>
+                </p>
+                <p>
+                    <strong>{{ attendanceSummary.present }}</strong
+                    ><span>Présent</span>
+                </p>
+                <p>
+                    <strong>{{ attendanceSummary.absent }}</strong
+                    ><span>Absent</span>
+                </p>
+                <p>
+                    <strong>{{ attendanceSummary.excused }}</strong
+                    ><span>Excusé</span>
+                </p>
+            </div></UiCard
+        >
         <div class="group-detail">
             <UiCard
                 ><template #header><h2>Informations</h2></template>
@@ -132,6 +167,23 @@ function restore(): void {
 .group-detail {
     display: grid;
     gap: var(--space-6);
+}
+.attendance-summary {
+    margin-bottom: var(--space-6);
+}
+.attendance-summary > div {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+    gap: var(--space-3);
+}
+.attendance-summary p,
+.attendance-summary strong,
+.attendance-summary span {
+    display: block;
+    margin: 0;
+}
+.attendance-summary span {
+    color: var(--color-text-secondary);
 }
 .group-detail dl {
     display: grid;

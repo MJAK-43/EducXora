@@ -35,6 +35,7 @@ final class HandleInertiaRequests extends Middleware
                 'canViewLearners' => (bool) $request->user()?->can('learners.view'),
                 'canViewGroups' => (bool) $request->user()?->can('group.view'),
                 'canViewSchedule' => (bool) $request->user()?->can('schedule.view'),
+                'canViewAttendance' => (bool) $request->user()?->can('attendance.view'),
                 'organizations' => $request->user()
                     ? OrganizationMembership::query()->with('organization')
                         ->where('user_id', $request->user()->getKey())

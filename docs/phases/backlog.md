@@ -1,5 +1,7 @@
 # Backlog directeur par phases
 
+> Numérotation faisant autorité au 2026-08-21 : le cadrage validé par le commanditaire désigne le suivi des présences comme **Phase 5**. Il remplace les anciens libellés historiques « Phase 5 — Planning » et « Phase 6 — Présences » plus bas. La Phase 4 contient déjà Groupes et Planning ; la Phase 5 Attendance est implémentée sans démarrer la Phase 6.
+
 Ce backlog traduit le cahier des charges et la mission renforcée. Chaque phase commence par raffinement, matrice de traçabilité et risques, puis se termine par son rapport. Aucun démarrage automatique de la phase suivante.
 
 ## Phase 0 — Audit, cadrage et architecture

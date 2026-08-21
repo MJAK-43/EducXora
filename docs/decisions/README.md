@@ -19,5 +19,6 @@ Les ADR consignent les décisions structurantes de Phase 0. États : `Accepted` 
 | [ADR-013](ADR-013-phase-2-audit-log.md)      | audit de sécurité append-only                         | Accepted    |
 | [ADR-014](ADR-014-learner-administration.md) | administration tenant-scoped des apprenants           | Accepted    |
 | [ADR-015](ADR-015-groups-and-scheduling-invariants.md) | groupes historiques et conflits de planning | Accepted |
+| [ADR-016](ADR-016-attendance-validation-and-corrections.md) | feuilles, validation et corrections de présence | Accepted |
 
 Format d'un nouvel ADR : contexte, décision, conséquences positives/négatives, alternatives et critères de révision. Ne pas réécrire une décision acceptée après coup ; la remplacer par un nouvel ADR.
