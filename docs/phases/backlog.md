@@ -37,12 +37,16 @@ Ce backlog traduit le cahier des charges et la mission renforcée. Chaque phase 
 
 ## Phase 4 — Apprenants & Groupes
 
+**Statut au 2026-08-21 : terminée et validée selon le cadrage explicite révisé « Groupes/Classes & Planning ». La partie apprenants avait été livrée en Phase 3 ; le planning initialement numéroté Phase 5 a été absorbé dans cette Phase 4.**
+
 - apprenants, inscriptions, archivage, recherche, langues/niveaux ;
 - groupes, capacités, affectations historisées ;
 - DataTable responsive, import contrôlé, exports autorisés ;
 - données mineurs/tuteurs selon Q-019.
 
 ## Phase 5 — Planning
+
+**Statut : périmètre historique absorbé par la Phase 4 révisée ; aucun développement additionnel n’est ouvert sous ce numéro.**
 
 - salles, séances, vues groupe/enseignant, création/modification/annulation/archive ;
 - interdiction de chevauchement enseignant/salle/groupe en app et DB ;

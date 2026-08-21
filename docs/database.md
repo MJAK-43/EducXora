@@ -174,3 +174,19 @@ learners est tenant-scoped par organization_id non nullable et expose un UUIDv7 
 Les contraintes SQL limitent le niveau à A1–C2, la langue active à de et le statut aux deux valeurs autorisées. Les index commencent par organization_id pour les listes, recherches, contacts et filtres. Le téléphone et l’e-mail ne sont pas uniques.
 
 L’archivage conserve archived_at et archived_by. created_by et archived_by sont mis à NULL si l’identité disparaît ; la suppression d’une organisation cascade sur ses données tenant conformément au cycle de vie du tenant.
+
+## Tables Phase 4
+
+groups contient UUIDv7, organisation, nom, langue, niveau, capacité positive, adhésion enseignante responsable, statut et trace d’archivage. La FK (teacher_membership_id, organization_id) référence l’adhésion du même tenant.
+
+group_learner_assignments est la source historique de composition. Les FK (organization_id, group_id) et (organization_id, learner_id) bloquent les références croisées. Un index unique partiel sur (organization_id, learner_id) lorsque detached_at est NULL garantit une seule affectation active ; les retraits renseignent acteur et timestamp sans supprimer la ligne.
+
+course_sessions contient groupe, adhésion enseignante, salle textuelle facultative, starts_at, ends_at, statut et trace d’annulation. Les instants sont timestamptz UTC et la contrainte ends_at > starts_at complète les validations.
+
+L’extension PostgreSQL btree_gist permet trois contraintes d’exclusion sur les séances scheduled :
+
+- organisation + groupe + plage semi-ouverte [début, fin) ;
+- organisation + adhésion enseignante + même plage ;
+- organisation + salle normalisée en minuscules + même plage lorsque la salle est renseignée.
+
+Les séances annulées ne participent plus aux exclusions. Les contraintes sont testées sur PostgreSQL réel ; SQLite n’est pas une cible de validation.

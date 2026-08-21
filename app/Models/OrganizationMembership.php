@@ -8,6 +8,7 @@ use App\Enums\MembershipStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Support\Str;
 
 final class OrganizationMembership extends Pivot
 {
@@ -16,6 +17,13 @@ final class OrganizationMembership extends Pivot
     public $incrementing = true;
 
     protected $fillable = ['organization_id', 'user_id', 'status', 'joined_at'];
+
+    protected static function booted(): void
+    {
+        self::creating(function (OrganizationMembership $membership): void {
+            $membership->uuid ??= (string) Str::uuid7();
+        });
+    }
 
     /** @return BelongsTo<Organization, $this> */
     public function organization(): BelongsTo

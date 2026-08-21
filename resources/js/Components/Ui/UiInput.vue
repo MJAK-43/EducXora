@@ -6,7 +6,7 @@ const props = withDefaults(
         modelValue?: string | number;
         id?: string;
         label: string;
-        type?: 'text' | 'email' | 'tel' | 'password' | 'number' | 'date';
+        type?: 'text' | 'email' | 'tel' | 'password' | 'number' | 'date' | 'time';
         required?: boolean;
         help?: string;
         error?: string;

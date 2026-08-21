@@ -9,6 +9,9 @@ return [
         'permissions.view', 'permissions.assign', 'audit.view',
         'learners.view', 'learners.create', 'learners.update', 'learners.archive',
         'learners.restore', 'learners.export',
+        'group.view', 'group.create', 'group.update', 'group.archive',
+        'group.restore', 'group.learners.manage',
+        'schedule.view', 'schedule.create', 'schedule.update', 'schedule.cancel',
     ],
     'roles' => [
         'Organization Admin' => ['*'],
@@ -17,8 +20,13 @@ return [
             'users.update', 'users.invite', 'roles.view', 'permissions.view',
             'learners.view', 'learners.create', 'learners.update', 'learners.archive',
             'learners.restore', 'learners.export',
+            'group.view', 'group.create', 'group.update', 'group.archive',
+            'group.restore', 'group.learners.manage',
+            'schedule.view', 'schedule.create', 'schedule.update', 'schedule.cancel',
         ],
-        'Teacher/Trainer' => ['organization.view', 'users.view'],
+        'Teacher/Trainer' => [
+            'organization.view', 'users.view', 'group.view', 'schedule.view',
+        ],
         'Accountant' => [
             'organization.view', 'users.view', 'learners.view', 'learners.create',
             'learners.update', 'learners.archive', 'learners.export',
@@ -26,6 +34,9 @@ return [
         'Staff' => [
             'organization.view', 'learners.view', 'learners.create', 'learners.update',
             'learners.archive', 'learners.export',
+            'group.view', 'group.create', 'group.update', 'group.archive',
+            'group.restore', 'group.learners.manage',
+            'schedule.view', 'schedule.create', 'schedule.update', 'schedule.cancel',
         ],
     ],
 ];

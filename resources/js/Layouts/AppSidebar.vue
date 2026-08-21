@@ -2,10 +2,12 @@
 import { Link, usePage } from '@inertiajs/vue3';
 import {
     Building2,
+    CalendarDays,
     GraduationCap,
     KeyRound,
     Landmark,
     LayoutDashboard,
+    LibraryBig,
     Settings2,
     UsersRound,
 } from '@lucide/vue';
@@ -17,11 +19,15 @@ const auth = page.props.auth as
     | {
           isSuperAdmin?: boolean;
           canViewLearners?: boolean;
+          canViewGroups?: boolean;
+          canViewSchedule?: boolean;
       }
     | undefined;
 const navigation: Array<{ label: string; href: string; icon: Component; visible?: boolean }> = [
     { label: 'Tableau de bord', href: '/dashboard', icon: LayoutDashboard },
     { label: 'Apprenants', href: '/learners', icon: GraduationCap, visible: auth?.canViewLearners },
+    { label: 'Groupes', href: '/groups', icon: LibraryBig, visible: auth?.canViewGroups },
+    { label: 'Planning', href: '/schedule', icon: CalendarDays, visible: auth?.canViewSchedule },
     { label: 'Utilisateurs', href: '/organization/users', icon: UsersRound },
     { label: 'Rôles et permissions', href: '/organization/roles', icon: KeyRound },
     { label: 'Organisation', href: '/organization/settings', icon: Settings2 },

@@ -108,3 +108,15 @@ Le client ne peut fournir ni organization_id ni center_id. Le scope tenant, la p
 Les photos sont validées comme JPEG/PNG/WebP, limitées à 2 Mo et 4096 px, puis stockées sur le disque privé. Leur téléchargement exige learners.view, applique le scope tenant, renvoie Cache-Control: private et interdit le MIME sniffing.
 
 L’export est rate-limité, filtré dans la requête tenant-scoped et ne reçoit aucun identifiant d’organisation client. Les tests couvrent explicitement lecture, écriture, archivage, restauration, photo et export entre deux organisations.
+
+## Protection des groupes et du planning
+
+- organization_id est interdit dans les Form Requests et attribué par le TenantContext.
+- Les groupes, affectations et séances utilisent le scope tenant fail-closed ; les UUID sont résolus seulement après les middlewares tenant.
+- Les clés étrangères composites empêchent les références groupe/apprenant/adhésion/séance entre organisations.
+- L’enseignant est une adhésion active dotée du rôle Teacher/Trainer, pas un identifiant utilisateur libre fourni par le client.
+- Les permissions group.* et schedule.* sont vérifiées par Gates et policies backend. L’enseignant ne voit que ses groupes et séances et ne peut pas les administrer.
+- Les capacités et affectations sont contrôlées sous transaction et verrou ; un index partiel interdit les doubles affectations actives.
+- Les conflits de planning sont validés par l’application puis garantis par des contraintes d’exclusion PostgreSQL résistantes à la concurrence.
+- Archivage, retrait d’affectation et annulation conservent l’historique ; aucune route de suppression destructive n’est exposée.
+- Les audits utilisent uniquement UUID, états et références minimales ; aucune notification ni donnée sensible n’est ajoutée aux logs.

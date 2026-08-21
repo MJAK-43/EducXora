@@ -145,3 +145,13 @@ Le premier domaine métier est app/Domain/Learner. Il contient les enums, le mod
 Les paramètres de route Learner restent des UUID simples puis sont résolus dans le contrôleur après le middleware tenant. Ce choix garantit que le scope fail-closed dispose du TenantContext avant toute requête Eloquent.
 
 Les relations vers les groupes, le planning, les présences, les évaluations et la finance sont volontairement absentes. Elles seront introduites uniquement dans leurs phases métier.
+
+## Domaines Learning et Scheduling — Phase 4
+
+app/Domain/Learning porte les groupes, leur cycle de vie, les affectations historiques, les Actions transactionnelles, les Queries et les présentations Inertia. L’enseignant responsable est une adhésion active du même tenant, contrôlée par une FK composite et sélectionnée par UUID.
+
+app/Domain/Scheduling porte les séances, leur annulation, la conversion du fuseau de l’organisation vers UTC, la vue hebdomadaire et la détection des conflits. Les contrôleurs restent des adaptateurs HTTP ; les invariants de capacité, d’éligibilité et de créneau vivent dans les Actions/Services.
+
+Les enseignants reçoivent uniquement les lectures liées à leur teacher_membership_id. Les profils administratifs disposant de group.update ou schedule.create voient le périmètre tenant complet. Les UUID de route sont résolus après le middleware tenant afin de conserver le comportement fail-closed.
+
+Les collisions sont défendues deux fois : requête applicative pour le message utilisateur, puis contraintes d’exclusion PostgreSQL pour les écritures concurrentes. L’annulation change l’état et libère les contraintes ; aucune suppression de séance n’est exposée.

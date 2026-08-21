@@ -123,3 +123,18 @@ LearnerManagementTest vérifie validation, normalisation du téléphone, créati
 PhoneNormalizerTest couvre les formats local, international +237 et 00237. LearnerForm.spec.ts vérifie les libellés accessibles, les contraintes photo et les soumissions création/édition multipart.
 
 La migration Learner doit être testée sur eduxora_testing par la séquence fresh → rollback de la dernière migration → migrate. Ne jamais exécuter cette séquence sur une base de développement partagée ou de production.
+
+## Couverture Phase 4
+
+GroupManagementTest couvre création, liste paginée, recherche/filtres, modification, changement d’enseignant, archivage/restauration, capacité, ajout/retrait, historique, compatibilité, duplication, rôles et matrice tenant A/B.
+
+CourseSessionManagementTest couvre fuseau organisation/UTC, création, édition, annulation, semaine/filtres, groupe archivé, créneaux adjacents et conflits groupe/enseignant/salle. Il vérifie aussi la lecture propre à l’enseignant et les tentatives d’édition, annulation ou référence de ressources du tenant B.
+
+PhaseFourComponents.spec.ts couvre les libellés/contraintes des formulaires, création/édition, gestion des membres, confirmation de retrait, sept jours, états vides, cartes complètes et séance annulée sans actions.
+
+La suite validée totalise :
+
+- 51 tests Laravel et 306 assertions, dont 19 tests Phase 4 ;
+- 24 tests Vitest dans 5 fichiers, dont 13 tests Phase 4.
+
+Les migrations Phase 4 sont validées par migrate:fresh --force, migrate:rollback --force, puis migrate --force sur PostgreSQL dédié. La validation navigateur aux six largeurs cibles reste **NOT TESTED** dans cette session.

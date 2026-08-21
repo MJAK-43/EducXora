@@ -33,6 +33,8 @@ final class HandleInertiaRequests extends Middleware
                 'user' => $request->user()?->only(['uuid', 'name', 'first_name', 'last_name', 'email']),
                 'isSuperAdmin' => (bool) $request->user()?->isSuperAdmin(),
                 'canViewLearners' => (bool) $request->user()?->can('learners.view'),
+                'canViewGroups' => (bool) $request->user()?->can('group.view'),
+                'canViewSchedule' => (bool) $request->user()?->can('schedule.view'),
                 'organizations' => $request->user()
                     ? OrganizationMembership::query()->with('organization')
                         ->where('user_id', $request->user()->getKey())
