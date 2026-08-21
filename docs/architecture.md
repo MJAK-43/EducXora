@@ -1,5 +1,13 @@
 # Architecture cible
 
+## Fondation applicative Phase 2
+
+La requête web authentifiée traverse successivement les contrôles utilisateur actif, durée absolue, e-mail vérifié, résolution de l’adhésion, état de l’adhésion et état de l’organisation. `TenantContext` est un service scoped à la requête. Les modèles tenantés lisent ce contexte via un scope global fail-closed et l’utilisent pour attribuer `organization_id` à la création.
+
+L’identité `User` reste globale ; les rôles métier sont attachés à `OrganizationMembership`. `MembershipAuthorizer` résout les permissions effectives et alimente Gates/policies. Le Super Admin emprunte un groupe de routes plateforme séparé sans fabriquer d’adhésions tenant.
+
+Les services `OrganizationCreator`, `InvitationService`, `RoleProvisioner` et `AuditLogger` concentrent les transactions et invariants sensibles. Les contrôleurs Inertia orchestrent validation et réponse, sans porter la logique de tenant ou de rôle.
+
 Statut : architecture cible validée en Phase 0 ; fondation technique implémentée en Phase 1. Les domaines métier restent soumis aux phases et ADR ultérieurs.
 
 ## Socle implémenté en Phase 1
@@ -50,21 +58,21 @@ Un déploiement applicatif unique contient des domaines fortement séparés. Cha
 
 ### Domaines et responsabilités
 
-| Domaine | Responsabilité | Entités principales |
-|---|---|---|
-| Center | cycle de vie et paramètres d'un centre | Center, CenterSetting, CenterBranding |
-| Identity | identités, adhésions, rôles et permissions | User, CenterMembership, Role, Permission |
-| Student | dossier apprenant, inscription, archivage | Student, Enrollment |
-| Learning | langues, niveaux, groupes et affectations | Language, Level, Group, GroupAssignment |
-| Scheduling | salles, séances, conflits, annulations | Room, CourseSession |
-| Attendance | feuilles, pointages, corrections, sync offline | AttendanceSheet, AttendanceRecord, Correction |
-| Assessment | questions, tests, progression, notes, bulletins | Question, TestSession, Assessment, Bulletin |
-| Finance | factures, échéanciers, créances, reçus, remboursements | Invoice, Schedule, Payment, Refund, Receipt |
-| Payment | orchestration et intégrations Mobile Money | Attempt, Transaction, WebhookEvent, Provider |
-| Communication | modèles, consentements et livraisons multicanal | Template, NotificationLog |
-| Reporting | projections, exports, KPI | ReportRun, Export |
-| Subscription | plans et abonnements du centre au SaaS | Plan, Subscription, SubscriptionPayment |
-| Audit | journal immuable des opérations sensibles | AuditLog |
+| Domaine       | Responsabilité                                         | Entités principales                           |
+| ------------- | ------------------------------------------------------ | --------------------------------------------- |
+| Center        | cycle de vie et paramètres d'un centre                 | Center, CenterSetting, CenterBranding         |
+| Identity      | identités, adhésions, rôles et permissions             | User, CenterMembership, Role, Permission      |
+| Student       | dossier apprenant, inscription, archivage              | Student, Enrollment                           |
+| Learning      | langues, niveaux, groupes et affectations              | Language, Level, Group, GroupAssignment       |
+| Scheduling    | salles, séances, conflits, annulations                 | Room, CourseSession                           |
+| Attendance    | feuilles, pointages, corrections, sync offline         | AttendanceSheet, AttendanceRecord, Correction |
+| Assessment    | questions, tests, progression, notes, bulletins        | Question, TestSession, Assessment, Bulletin   |
+| Finance       | factures, échéanciers, créances, reçus, remboursements | Invoice, Schedule, Payment, Refund, Receipt   |
+| Payment       | orchestration et intégrations Mobile Money             | Attempt, Transaction, WebhookEvent, Provider  |
+| Communication | modèles, consentements et livraisons multicanal        | Template, NotificationLog                     |
+| Reporting     | projections, exports, KPI                              | ReportRun, Export                             |
+| Subscription  | plans et abonnements du centre au SaaS                 | Plan, Subscription, SubscriptionPayment       |
+| Audit         | journal immuable des opérations sensibles              | AuditLog                                      |
 
 Finance scolaire et facturation SaaS partagent des primitives techniques (Money, idempotence) mais jamais leurs agrégats ni leurs tables métier.
 
@@ -129,3 +137,11 @@ Développement via Docker Compose : Nginx, PHP-FPM, PostgreSQL, Redis, worker, s
 Identity/Tenancy précède tous les domaines tenant-scoped. Student/Learning précède Scheduling ; Scheduling précède Attendance ; Student précède Finance et Assessment. Communication consomme les événements des autres domaines. Reporting ne devient jamais une voie détournée contournant leurs policies.
 
 Voir les ADR pour les décisions et `docs/requirements.md` pour les hypothèses ouvertes.
+
+## Domaine Learner — Phase 3
+
+Le premier domaine métier est app/Domain/Learner. Il contient les enums, le modèle tenant-scoped, les Actions de mutation, la Query de liste, le stockage de photo et le presenter Inertia. Les contrôleurs HTTP ne font que l’autorisation de ressource, l’orchestration et la transformation de réponse.
+
+Les paramètres de route Learner restent des UUID simples puis sont résolus dans le contrôleur après le middleware tenant. Ce choix garantit que le scope fail-closed dispose du TenantContext avant toute requête Eloquent.
+
+Les relations vers les groupes, le planning, les présences, les évaluations et la finance sont volontairement absentes. Elles seront introduites uniquement dans leurs phases métier.

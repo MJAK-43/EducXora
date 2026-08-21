@@ -21,6 +21,12 @@ Le cycle PostgreSQL bloquant est `migrate:fresh --force`, `migrate:rollback --fo
 
 L'automatisation navigateur n'était pas disponible lors de la validation Phase 1. Les largeurs 375, 390, 768, 1024, 1280 et 1440 px ont donc le statut **NOT TESTED visuellement** ; elles restent une vérification manuelle obligatoire avant toute validation UX de production. Les media queries, la compilation et la structure accessible ont été vérifiées sans moteur de rendu.
 
+## Couverture ajoutée en Phase 2
+
+Les suites `AuthenticationTest`, `TenancyAndRbacTest` et `InvitationAndAuditTest` vérifient l’inscription atomique, le hash du mot de passe, la connexion active/inactive, le reset non énumérant, l’expiration absolue, les UUID, les adhésions et rôles initiaux. Elles couvrent aussi la tentative d’accès tenant A/B, le changement vers une organisation non liée, les permissions Manager/Admin, la suspension d’un tenant, un rôle cross-tenant, les invitations hashées/expirées/non rejouables et l’audit append-only expurgé.
+
+La suite active totalise 21 tests backend / 77 assertions et 8 tests frontend. PostgreSQL et Redis réels sont utilisés. Le typecheck Vue, ESLint, Prettier, Larastan, Pint et le build Vite sont bloquants. La vérification navigateur responsive Phase 2 est **NOT TESTED** dans cette session faute de Node REPL exposé ; la CI GitHub distante est **NOT TESTED** car aucun commit/push ne fait partie de cette livraison.
+
 ## Principes
 
 Tester les invariants au niveau le moins coûteux, puis couvrir les frontières réellement risquées. Tous les tests utilisent PostgreSQL pour les comportements qui en dépendent ; SQLite n'est pas un substitut pour FK composites, contraintes d'exclusion, verrouillage ou RLS.
@@ -65,14 +71,14 @@ Playwright sur parcours critiques, dont la chaîne prioritaire : création centr
 
 Pour `students`, `groups`, `course_sessions`, `attendance`, `invoices`, `payments`, `bulletins`, `reports` et `documents`, un utilisateur du centre A tente sur une ressource B :
 
-| Opération | Résultat attendu |
-|---|---|
-| liste/recherche | ressource absente, aucune fuite de compteur |
-| vue directe | 404 de préférence, 403 accepté si politique homogène |
-| modification | 404/403, aucune mutation |
-| suppression/archivage | 404/403, aucune mutation |
-| téléchargement/export | 404/403 même avec ancienne URL signée |
-| identifiant dans payload | ignoré/rejeté, jamais de changement de tenant |
+| Opération                | Résultat attendu                                     |
+| ------------------------ | ---------------------------------------------------- |
+| liste/recherche          | ressource absente, aucune fuite de compteur          |
+| vue directe              | 404 de préférence, 403 accepté si politique homogène |
+| modification             | 404/403, aucune mutation                             |
+| suppression/archivage    | 404/403, aucune mutation                             |
+| téléchargement/export    | 404/403 même avec ancienne URL signée                |
+| identifiant dans payload | ignoré/rejeté, jamais de changement de tenant        |
 
 Ajouter des cas job, cache, broadcast et fichier. L'accès Super Admin est testé séparément et doit produire un audit.
 
@@ -109,3 +115,11 @@ Factories déterministes, horloge figée et tenants distincts par défaut. Aucun
 ## Portes CI
 
 Formatage, analyse statique, tests unitaires/feature/intégration, lint, typecheck, tests frontend et build sont obligatoires. Une suite nocturne peut porter E2E multi-navigateurs, charge, scans et restauration ; les parcours MUST restent bloquants avant livraison.
+
+## Couverture Phase 3
+
+LearnerManagementTest vérifie validation, normalisation du téléphone, création, recherche, pagination, filtres, rôles, archivage/restauration, audit, stockage privé et export. Le scénario inter-tenant prouve que A ne peut pas consulter, modifier, archiver, restaurer, télécharger la photo ni exporter l’apprenant de B.
+
+PhoneNormalizerTest couvre les formats local, international +237 et 00237. LearnerForm.spec.ts vérifie les libellés accessibles, les contraintes photo et les soumissions création/édition multipart.
+
+La migration Learner doit être testée sur eduxora_testing par la séquence fresh → rollback de la dernière migration → migrate. Ne jamais exécuter cette séquence sur une base de développement partagée ou de production.

@@ -1,39 +1,32 @@
 <script setup lang="ts">
+import { Link, usePage } from '@inertiajs/vue3';
 import {
-    BookOpenCheck,
-    CalendarDays,
-    ChartNoAxesCombined,
-    CircleDollarSign,
+    Building2,
     GraduationCap,
+    KeyRound,
     Landmark,
     LayoutDashboard,
-    MessageSquareText,
     Settings2,
-    UserRoundCheck,
     UsersRound,
 } from '@lucide/vue';
-import type { Component } from 'vue';
+import { computed, type Component } from 'vue';
 
 defineProps<{ collapsed: boolean; mobileOpen: boolean }>();
-
-interface NavigationItem {
-    label: string;
-    icon: Component;
-    active?: boolean;
-}
-
-const navigation: NavigationItem[] = [
-    { label: 'Dashboard', icon: LayoutDashboard },
-    { label: 'Apprenants', icon: GraduationCap },
-    { label: 'Groupes', icon: UsersRound },
-    { label: 'Planning', icon: CalendarDays },
-    { label: 'Présences', icon: UserRoundCheck },
-    { label: 'Pédagogie', icon: BookOpenCheck },
-    { label: 'Finance', icon: CircleDollarSign },
-    { label: 'Communications', icon: MessageSquareText },
-    { label: 'Rapports', icon: ChartNoAxesCombined },
-    { label: 'Administration', icon: Settings2 },
+const page = usePage();
+const auth = page.props.auth as
+    | {
+          isSuperAdmin?: boolean;
+          canViewLearners?: boolean;
+      }
+    | undefined;
+const navigation: Array<{ label: string; href: string; icon: Component; visible?: boolean }> = [
+    { label: 'Tableau de bord', href: '/dashboard', icon: LayoutDashboard },
+    { label: 'Apprenants', href: '/learners', icon: GraduationCap, visible: auth?.canViewLearners },
+    { label: 'Utilisateurs', href: '/organization/users', icon: UsersRound },
+    { label: 'Rôles et permissions', href: '/organization/roles', icon: KeyRound },
+    { label: 'Organisation', href: '/organization/settings', icon: Settings2 },
 ];
+const visibleNavigation = computed(() => navigation.filter((item) => item.visible !== false));
 </script>
 
 <template>
@@ -44,51 +37,46 @@ const navigation: NavigationItem[] = [
         aria-label="Navigation principale"
     >
         <div class="app-sidebar__inner">
-            <div class="app-sidebar__brand">
-                <span class="app-sidebar__mark"
+            <Link
+                href="/dashboard"
+                class="app-sidebar__brand"
+                ><span class="app-sidebar__mark"
                     ><Landmark
                         :size="18"
-                        aria-hidden="true"
-                /></span>
-                <span class="app-sidebar__label">EduXora</span>
-            </div>
+                        aria-hidden="true" /></span
+                ><span class="app-sidebar__label">EduXora</span></Link
+            >
             <nav class="app-sidebar__nav">
-                <div class="app-sidebar__section-label">Produit</div>
-                <button
-                    type="button"
-                    class="app-sidebar__item app-sidebar__item--active"
-                    aria-current="page"
-                >
-                    <LayoutDashboard aria-hidden="true" />
-                    <span class="app-sidebar__label">Foundation</span>
-                </button>
-                <div class="app-sidebar__section-label">Aperçu des modules</div>
-                <button
-                    v-for="item in navigation"
-                    :key="item.label"
-                    type="button"
+                <div class="app-sidebar__section-label">Espace de travail</div>
+                <Link
+                    v-for="item in visibleNavigation"
+                    :key="item.href"
+                    :href="item.href"
                     class="app-sidebar__item"
-                    disabled
-                    :title="
-                        collapsed
-                            ? `${item.label} — disponible dans une phase ultérieure`
-                            : undefined
-                    "
-                >
-                    <component
+                    :class="{ 'app-sidebar__item--active': page.url.startsWith(item.href) }"
+                    ><component
                         :is="item.icon"
                         aria-hidden="true"
-                    />
-                    <span class="app-sidebar__label">{{ item.label }}</span>
-                </button>
+                    /><span class="app-sidebar__label">{{ item.label }}</span></Link
+                >
+                <template v-if="auth?.isSuperAdmin"
+                    ><div class="app-sidebar__section-label">Plateforme</div>
+                    <Link
+                        href="/platform/organizations"
+                        class="app-sidebar__item"
+                        :class="{ 'app-sidebar__item--active': page.url.startsWith('/platform') }"
+                        ><Building2 aria-hidden="true" /><span class="app-sidebar__label"
+                            >Organisations</span
+                        ></Link
+                    ></template
+                >
             </nav>
             <div class="app-sidebar__footer">
                 <div class="app-sidebar__foundation">
                     <span
                         class="app-sidebar__dot"
                         aria-hidden="true"
-                    />
-                    <span>Socle technique actif</span>
+                    /><span>Identité sécurisée</span>
                 </div>
             </div>
         </div>

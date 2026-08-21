@@ -2,24 +2,33 @@
 
 namespace Database\Seeders;
 
+use App\Enums\UserStatus;
+use App\Models\Organization;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Services\Authorization\RoleProvisioner;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
      * Seed the application's database.
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $superAdminRole = app(RoleProvisioner::class)->provisionPlatform();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        Organization::query()->each(
+            fn (Organization $organization) => app(RoleProvisioner::class)->provisionOrganization($organization),
+        );
+        if (app()->environment(['local', 'testing'])) {
+            $user = User::query()->firstOrCreate(
+                ['email' => 'admin@eduxora.local'],
+                [
+                    'name' => 'Admin EduXora', 'first_name' => 'Admin', 'last_name' => 'EduXora',
+                    'password' => 'password', 'email_verified_at' => now(), 'status' => UserStatus::Active,
+                ],
+            );
+            $user->assignRole($superAdminRole);
+        }
     }
 }

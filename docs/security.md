@@ -13,6 +13,21 @@
 
 Ces contrôles constituent un baseline et non le hardening complet OWASP. L'authentification, le RBAC et le multi-tenant restent explicitement hors Phase 1.
 
+## Contrôles livrés en Phase 2
+
+- identité globale UUIDv7, e-mail vérifié, état actif/inactif/suspendu/en attente et mots de passe hashés par Laravel ;
+- rotation de session à la connexion, expiration absolue à 24 heures et expiration inactive à 30 minutes via Redis ;
+- limitation des tentatives de connexion, inscription, reset et renvoi de vérification ; messages de reset/login non énumérants ;
+- frontière tenant `Organization`, adhésion explicite, résolution serveur et refus fermé des modèles tenantés sans contexte ;
+- organisation suspendue, adhésion inactive ou utilisateur inactif bloqués par middlewares indépendants ;
+- RBAC d’adhésion avec permissions atomiques, Gates, policies et FK composites anti-cross-tenant ;
+- Super Admin global séparé des adhésions et routes plateforme dédiées ;
+- invitation expirante 72 h, token uniquement sous forme de hash et acceptation à usage unique ;
+- confirmation de mot de passe sur les changements d’organisation/rôles et actions plateforme sensibles ;
+- audit structuré append-only des événements d’identité, d’adhésion, de rôle, d’invitation et d’organisation, sans mot de passe/token.
+
+MFA est préparée architecturalement mais non implémentée dans le périmètre Phase 2. Elle reste obligatoire avant ouverture publique de comptes Super Admin. PostgreSQL RLS est également différée jusqu’à preuve d’un contexte fiable sur connexions web et workers ; voir ADR-010 et ADR-011.
+
 ## Modèle de menace prioritaire
 
 Les actifs critiques sont les données personnelles des apprenants, les documents, les écritures financières, les identités, les secrets fournisseurs et la séparation entre centres. Les menaces prioritaires sont : IDOR inter-tenant, élévation de privilèges, vol de session, fraude/rejeu de paiement, doublon de webhook, export massif, fuite par cache/fichier/job, injection, XSS, CSRF et abus de messagerie.
@@ -85,3 +100,11 @@ Chaque ressource tenant-scoped reçoit des tests d'accès croisé. Les opératio
 ## Points restant à décider
 
 Politique MFA Directeur, durée de conservation, consentement/tuteur pour mineurs, accès support, RPO/RTO, fournisseur de secrets, régions de stockage et exigences réglementaires camerounaises doivent être validés avant les phases concernées.
+
+## Protection des dossiers apprenants
+
+Le client ne peut fournir ni organization_id ni center_id. Le scope tenant, la policy Learner et les permissions atomiques forment trois barrières distinctes. Les contrôleurs résolvent les UUID après établissement du tenant context.
+
+Les photos sont validées comme JPEG/PNG/WebP, limitées à 2 Mo et 4096 px, puis stockées sur le disque privé. Leur téléchargement exige learners.view, applique le scope tenant, renvoie Cache-Control: private et interdit le MIME sniffing.
+
+L’export est rate-limité, filtré dans la requête tenant-scoped et ne reçoit aucun identifiant d’organisation client. Les tests couvrent explicitement lecture, écriture, archivage, restauration, photo et export entre deux organisations.

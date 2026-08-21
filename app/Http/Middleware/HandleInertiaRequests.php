@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Enums\MembershipStatus;
+use App\Models\OrganizationMembership;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -27,6 +29,22 @@ final class HandleInertiaRequests extends Middleware
                 'name' => config('app.name'),
                 'environment' => app()->environment(),
             ],
+            'auth' => fn (): array => [
+                'user' => $request->user()?->only(['uuid', 'name', 'first_name', 'last_name', 'email']),
+                'isSuperAdmin' => (bool) $request->user()?->isSuperAdmin(),
+                'canViewLearners' => (bool) $request->user()?->can('learners.view'),
+                'organizations' => $request->user()
+                    ? OrganizationMembership::query()->with('organization')
+                        ->where('user_id', $request->user()->getKey())
+                        ->where('status', MembershipStatus::Active)->get()
+                        ->map(fn (OrganizationMembership $membership): array => [
+                            'uuid' => $membership->organization->uuid,
+                            'name' => $membership->organization->name,
+                        ])->values()
+                    : [],
+                'activeOrganizationUuid' => $request->session()->get('active_organization_uuid'),
+            ],
+            'flash' => fn (): array => ['status' => $request->session()->get('status')],
         ];
     }
 }

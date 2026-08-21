@@ -1,5 +1,15 @@
 # Modèle de données macro
 
+## Phase 2 — identité et organisations
+
+`users` est l’identité globale et utilise un UUIDv7 public tout en conservant une clé primaire bigint interne. `organizations` est la frontière de tenant. `organization_user` représente l’adhésion unique d’un utilisateur à une organisation avec son état et sa date d’entrée.
+
+Le catalogue `permissions` est global. `roles.organization_id` distingue les rôles tenantés du seul rôle plateforme global `Super Admin`. `membership_role` relie un rôle à une adhésion ; ses deux clés étrangères composites imposent en base que rôle et adhésion partagent le même `organization_id`.
+
+`user_invitations` porte l’organisation et le rôle, stocke uniquement l’empreinte du token et interdit deux invitations actives concurrentes pour le même e-mail/tenant. `audit_logs` est append-only au niveau applicatif et accepte un tenant nullable pour les événements plateforme.
+
+Les UUID sont utilisés dans les URLs ; les identifiants bigint restent réservés aux jointures internes. Tous les futurs modèles métier tenantés doivent porter `organization_id`, utiliser `BelongsToTenant`, recevoir des FK composites lorsque la relation traverse deux tables tenantées et des tests d’isolation A/B.
+
 Ce document décrit les agrégats et contraintes attendus, pas encore des migrations. Les noms définitifs seront validés à chaque phase.
 
 ## Conventions
@@ -156,3 +166,11 @@ Paiement confirmé, allocation, remboursement, séquence documentaire, validatio
 ## Rétention et sauvegarde
 
 Les durées légales/commerciales ne sont pas définies. Par défaut de conception, finance et audit ne sont pas supprimés, mais leur durée finale et les règles d'anonymisation doivent être confirmées. Les sauvegardes seront chiffrées, quotidiennes, testées par restauration et assorties de RPO/RTO explicites.
+
+## Table learners
+
+learners est tenant-scoped par organization_id non nullable et expose un UUIDv7 unique. Les noms, date de naissance, téléphone normalisé, e-mail facultatif, langue, niveau CECRL initial et date d’inscription sont conservés avec un statut active ou archived.
+
+Les contraintes SQL limitent le niveau à A1–C2, la langue active à de et le statut aux deux valeurs autorisées. Les index commencent par organization_id pour les listes, recherches, contacts et filtres. Le téléphone et l’e-mail ne sont pas uniques.
+
+L’archivage conserve archived_at et archived_by. created_by et archived_by sont mis à NULL si l’identité disparaît ; la suppression d’une organisation cascade sur ses données tenant conformément au cycle de vie du tenant.
