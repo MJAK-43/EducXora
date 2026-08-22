@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\Domain\Attendance\Models\AttendanceSheet;
 use App\Domain\Learner\Models\Learner;
 use App\Domain\Learning\Models\Group;
+use App\Domain\Pedagogy\Models\PlacementAttempt;
+use App\Domain\Pedagogy\Models\PlacementQuestion;
 use App\Domain\Scheduling\Models\CourseSession;
 use App\Models\AuditLog;
 use App\Models\Organization;
@@ -17,6 +19,8 @@ use App\Policies\CourseSessionPolicy;
 use App\Policies\GroupPolicy;
 use App\Policies\LearnerPolicy;
 use App\Policies\OrganizationPolicy;
+use App\Policies\PlacementAttemptPolicy;
+use App\Policies\PlacementQuestionPolicy;
 use App\Policies\RolePolicy;
 use App\Policies\UserInvitationPolicy;
 use App\Policies\UserPolicy;
@@ -52,6 +56,8 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Learner::class, LearnerPolicy::class);
         Gate::policy(Group::class, GroupPolicy::class);
         Gate::policy(CourseSession::class, CourseSessionPolicy::class);
+        Gate::policy(PlacementQuestion::class, PlacementQuestionPolicy::class);
+        Gate::policy(PlacementAttempt::class, PlacementAttemptPolicy::class);
 
         Gate::before(function (User $user, string $ability): ?bool {
             return $user->isSuperAdmin() ? true : null;

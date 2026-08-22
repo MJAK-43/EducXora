@@ -33,7 +33,7 @@ final readonly class UpdateGroup
 
             if ($lockedGroup->activeAssignments()->whereHas(
                 'learner',
-                fn (Builder $query) => $query->where('initial_level', '!=', $attributes['level']),
+                fn (Builder $query) => $query->where('current_level', '!=', $attributes['level']),
             )->exists()) {
                 throw ValidationException::withMessages(['level' => 'Le niveau doit rester compatible avec les apprenants affectés.']);
             }

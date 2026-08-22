@@ -18,6 +18,16 @@ Les tables effectives sont `attendance_sheets`, `learner_attendances`, `teacher_
 
 Une feuille est unique par organisation/séance. Un relevé apprenant est unique par feuille/apprenant et un relevé enseignant par feuille. La feuille suit `draft → validated`; une correction ne crée pas de troisième état et reste une ligne append-only structurée. Le futur `offline_sync_commands` n’est pas créé en Phase 5.
 
+## Suivi pédagogique implémenté en Phase 6
+
+`learners.current_level` complète le niveau initial sans le réécrire. `learner_level_histories` est append-only et conserve ancienne/nouvelle valeur, source, auteur, motif, tentative éventuelle et instant. Une contrainte exige une tentative pour les changements issus d’un test ou d’un override de direction, et l’interdit pour l’évaluation manuelle enseignante.
+
+`placement_questions` est volontairement hybride : `organization_id` nul pour une question système globale en lecture seule, obligatoire pour une question d’organisation. Le JSON `choices` est limité en base à exactement A, B, C et D. La désactivation remplace la suppression.
+
+`placement_attempts` et `placement_attempt_questions` sont tenant-scoped. La tentative conserve version de score, score brut, pourcentage, suggestion et décision validée dans des colonnes distinctes. Les questions de tentative sont des instantanés immuables du contenu utile au calcul. Les contraintes SQL imposent les états `started`, `completed`, `reviewed`, la cohérence de leurs timestamps/résultats et celle d’une réponse unique. Un index partiel autorise une seule tentative en cours par apprenant.
+
+Les FK composites `(organization_id, parent_id)` protègent apprenant, tentative et groupe. Les questions sources sont globales ou tenantées ; leur FK simple est sûre parce qu’elles ne sont jamais supprimées et que la sélection applicative photographie uniquement une question visible dans le tenant courant.
+
 ## Conventions
 
 - PostgreSQL, encodage UTF-8.
@@ -177,7 +187,7 @@ Les durées légales/commerciales ne sont pas définies. Par défaut de concepti
 
 learners est tenant-scoped par organization_id non nullable et expose un UUIDv7 unique. Les noms, date de naissance, téléphone normalisé, e-mail facultatif, langue, niveau CECRL initial et date d’inscription sont conservés avec un statut active ou archived.
 
-Les contraintes SQL limitent le niveau à A1–C2, la langue active à de et le statut aux deux valeurs autorisées. Les index commencent par organization_id pour les listes, recherches, contacts et filtres. Le téléphone et l’e-mail ne sont pas uniques.
+Les contraintes SQL limitent les niveaux initial et courant à A1–C2, la langue active à de et le statut aux deux valeurs autorisées. Les index commencent par organization_id pour les listes, recherches, contacts et filtres. Le téléphone et l’e-mail ne sont pas uniques.
 
 L’archivage conserve archived_at et archived_by. created_by et archived_by sont mis à NULL si l’identité disparaît ; la suppression d’une organisation cascade sur ses données tenant conformément au cycle de vie du tenant.
 

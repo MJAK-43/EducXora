@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
 import {
+    BookOpenCheck,
     Building2,
     CalendarDays,
     ClipboardCheck,
@@ -23,6 +24,7 @@ const auth = page.props.auth as
           canViewGroups?: boolean;
           canViewSchedule?: boolean;
           canViewAttendance?: boolean;
+          canViewPedagogy?: boolean;
       }
     | undefined;
 const navigation: Array<{ label: string; href: string; icon: Component; visible?: boolean }> = [
@@ -35,6 +37,12 @@ const navigation: Array<{ label: string; href: string; icon: Component; visible?
         href: '/attendance',
         icon: ClipboardCheck,
         visible: auth?.canViewAttendance,
+    },
+    {
+        label: 'Pédagogie',
+        href: '/pedagogy/questions',
+        icon: BookOpenCheck,
+        visible: auth?.canViewPedagogy,
     },
     { label: 'Utilisateurs', href: '/organization/users', icon: UsersRound },
     { label: 'Rôles et permissions', href: '/organization/roles', icon: KeyRound },

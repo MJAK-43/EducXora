@@ -30,7 +30,8 @@ final readonly class AttachLearnerToGroup
             if ($lockedLearner->status !== LearnerStatus::Active) {
                 throw ValidationException::withMessages(['learner_uuid' => 'Seul un apprenant actif peut être affecté.']);
             }
-            if ($lockedLearner->initial_level !== $lockedGroup->level) {
+            if ((string) $lockedLearner->getRawOriginal('language') !== (string) $lockedGroup->getRawOriginal('language')
+                || $lockedLearner->current_level !== $lockedGroup->level) {
                 throw ValidationException::withMessages(['learner_uuid' => 'La langue et le niveau de l’apprenant doivent correspondre au groupe.']);
             }
             if (GroupLearnerAssignment::query()->where('learner_id', $lockedLearner->getKey())->whereNull('detached_at')->exists()) {

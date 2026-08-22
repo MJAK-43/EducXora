@@ -16,13 +16,20 @@ interface Learner {
     email: string | null;
     language_label: string;
     initial_level: string;
+    current_level: string;
     registered_on_label: string;
     status: string;
     photo_url: string | null;
 }
 const props = defineProps<{
     learner: Learner;
-    can: { update: boolean; archive: boolean; restore: boolean; viewAttendanceHistory: boolean };
+    can: {
+        update: boolean;
+        archive: boolean;
+        restore: boolean;
+        viewAttendanceHistory: boolean;
+        viewPedagogy: boolean;
+    };
 }>();
 const page = usePage();
 const flash = page.props.flash as { status?: string } | undefined;
@@ -79,6 +86,20 @@ function restoreLearner(): void {
                 >Voir les présences</Link
             ></UiCard
         >
+        <UiCard
+            v-if="can.viewPedagogy"
+            class="attendance-entry"
+            ><strong>Suivi pédagogique</strong>
+            <p>
+                Consultez le niveau actuel, les tests de positionnement et l’historique des
+                décisions.
+            </p>
+            <Link
+                class="learner-primary-link"
+                :href="`/learners/${learner.uuid}/pedagogy`"
+                >Ouvrir le suivi pédagogique</Link
+            ></UiCard
+        >
         <UiAlert
             v-if="flash?.status"
             tone="success"
@@ -126,6 +147,10 @@ function restoreLearner(): void {
                     <div>
                         <dt>Niveau initial</dt>
                         <dd>{{ learner.initial_level }}</dd>
+                    </div>
+                    <div>
+                        <dt>Niveau actuel</dt>
+                        <dd>{{ learner.current_level }}</dd>
                     </div>
                     <div>
                         <dt>Inscription</dt>

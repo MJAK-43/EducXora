@@ -31,10 +31,10 @@ Une exigence récente étend le PDF (SaaS multi-centres, Super Admin, SaaS billi
 | Q-004 | Email ou téléphone comme identifiant : vérification, unicité, partage familial | normaliser les deux ; au moins un vérifié ; ne pas rendre le téléphone apprenant unique | Phase 2/4 |
 | Q-005 | Correction validée par Directeur seulement (p.6) ou Directeur/Secrétaire (p.6) | permission `attendance.correct`, accordée provisoirement aux deux, audit/motif | Phase 6 |
 | Q-006 | Groupe présenté obligatoire, mais assignation possible après test | groupe nullable jusqu'à décision de placement | Phase 4/9 |
-| Q-007 | Algorithme et seuils A1–C2 absents | stratégie versionnée/configurable, aucune valeur hardcodée | Phase 9 |
-| Q-008 | Sélection de 15–30 questions, durée, tentative, reprise et fraude absentes | versionner un blueprint de test ; décision produit requise | Phase 9 |
+| Q-007 | Algorithme et seuils A1–C2 absents | décidé Phase 6 : barème technique `v1` centralisé et versionné ; validation pédagogique du barème requise avant production | Décidé via ADR-017 |
+| Q-008 | Sélection de 15–30 questions, durée, tentative, reprise et fraude absentes | décidé Phase 6 : 18 questions, 3 par niveau, une tentative active reprenable, sans durée V1 ; antifraude avancée différée | Décidé via ADR-017 |
 | Q-009 | Coefficients, périodes, arrondis et seuils de bulletin absents | règles versionnées par centre avec défauts validés | Phase 9 |
-| Q-010 | Qui valide un changement de niveau saisi par l'enseignant ? | proposition enseignant, validation Directeur par défaut | Phase 9 |
+| Q-010 | Qui valide un changement de niveau saisi par l'enseignant ? | décidé Phase 6 : enseignant autorisé sur ses groupes met à jour avec motif et historique ; la direction valide séparément les décisions issues du test | Décidé via ADR-017 |
 | Q-011 | Conditions d'échéance et définition retard/impayé | échéance explicite ; retard 1–30 jours, impayé >30 jours, fuseau centre | Phase 7 |
 | Q-012 | Échec MoMo « reste En attente » | tentative `FAILED`, facture/dette toujours ouverte ; aucun reçu | Phase 8 |
 | Q-013 | Surpaiement, allocation multi-factures et ordre d'affectation absents | refuser surpaiement ; allocation explicite FIFO à confirmer | Phase 7 |

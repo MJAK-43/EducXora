@@ -87,6 +87,7 @@ final readonly class LearnerController
                 'archive' => $request->user()->can('archive', $learner),
                 'restore' => $request->user()->can('restore', $learner),
                 'viewAttendanceHistory' => $request->user()->can('viewLearnerHistory', AttendanceSheet::class),
+                'viewPedagogy' => $request->user()->can('viewPedagogy', $learner),
             ],
         ]);
     }

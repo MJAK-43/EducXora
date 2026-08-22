@@ -21,6 +21,7 @@ final class LearnerPresenter
             'language' => $learner->language->value,
             'language_label' => $learner->language->label(),
             'initial_level' => $learner->initial_level->value,
+            'current_level' => $learner->current_level->value,
             'registered_on' => $learner->registered_on->format('Y-m-d'),
             'registered_on_label' => $learner->registered_on->format('d/m/Y'),
             'status' => $learner->status->value,

@@ -151,7 +151,7 @@ final readonly class GroupController
     /** @return array<int, array{value: string, label: string, phone: string}> */
     private function candidates(Group $group, string $search): array
     {
-        return Learner::query()->where('status', LearnerStatus::Active)->where('language', $group->language)->where('initial_level', $group->level)
+        return Learner::query()->where('status', LearnerStatus::Active)->where('language', $group->language)->where('current_level', $group->level)
             ->whereNotExists(fn ($query) => $query->selectRaw('1')->from('group_learner_assignments')->whereColumn('group_learner_assignments.learner_id', 'learners.id')->whereNull('detached_at'))
             ->when($search !== '', fn (Builder $query) => $query->whereRaw("CONCAT(first_name, ' ', last_name) ILIKE ?", ['%'.trim($search).'%']))
             ->orderBy('last_name')->limit(50)->get()->map(fn (Learner $learner): array => ['value' => $learner->uuid, 'label' => $learner->fullName(), 'phone' => $learner->phone])->all();

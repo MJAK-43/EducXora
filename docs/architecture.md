@@ -34,6 +34,12 @@ Le frontend Phase 1 se limite à `resources/js/Components/Ui`, `resources/js/Lay
 
 Les historiques sont bornés par période et paginés. Les indicateurs Groupe et le taux apprenant sont calculés côté serveur sur les seules feuilles validées et séances non annulées. L’enseignant reste limité aux séances de sa propre adhésion ; les rapports tenant complets exigent `attendance.view_reports`. Voir ADR-016.
 
+## Domaine Pedagogy — Phase 6
+
+`app/Domain/Pedagogy` porte la banque de questions, les tentatives de positionnement, le score versionné, la suggestion de groupe et l’historique du niveau courant. Les questions système globales passent par une Query de visibilité explicite ; toutes les données d’exécution utilisent le scope tenant fail-closed et des FK composites.
+
+Le démarrage photographie les questions sélectionnées. Réponses, finalisation et revue sont des Actions transactionnelles sous verrou. `completed` signifie « suggestion calculée » ; seul `reviewed` porte une décision humaine. Le niveau initial de l’apprenant reste historique et chaque évolution du niveau courant produit une écriture append-only. Voir ADR-017.
+
 ## Principes directeurs
 
 1. Isolation tenant et autorisation avant ergonomie.

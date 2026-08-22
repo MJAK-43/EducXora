@@ -1,6 +1,6 @@
 # Backlog directeur par phases
 
-> Numérotation faisant autorité au 2026-08-21 : le cadrage validé par le commanditaire désigne le suivi des présences comme **Phase 5**. Il remplace les anciens libellés historiques « Phase 5 — Planning » et « Phase 6 — Présences » plus bas. La Phase 4 contient déjà Groupes et Planning ; la Phase 5 Attendance est implémentée sans démarrer la Phase 6.
+> Numérotation faisant autorité au 2026-08-22 : Phase 4 = Groupes & Planning, Phase 5 = Présences, Phase 6 = Suivi pédagogique & Test de niveau. Elle remplace les anciens libellés historiques conservés dans les premiers cadrages.
 
 Ce backlog traduit le cahier des charges et la mission renforcée. Chaque phase commence par raffinement, matrice de traçabilité et risques, puis se termine par son rapport. Aucun démarrage automatique de la phase suivante.
 
@@ -54,12 +54,16 @@ Ce backlog traduit le cahier des charges et la mission renforcée. Chaque phase 
 - interdiction de chevauchement enseignant/salle/groupe en app et DB ;
 - événements d'annulation prêts pour Communication.
 
-## Phase 6 — Présences
+## Phase 6 — Suivi pédagogique & Test de niveau
 
-- feuille DRAFT/VALIDATED/CORRECTED, apprenants et enseignant ;
-- permissions d'affectation, corrections auditées, historiques et statistiques ;
-- exports, séances non pointées et tests de concurrence ;
-- contrats/API de sync préparés, sans PWA offline complète.
+**Statut au 2026-08-22 : implémentée localement ; voir ADR-017 et le rapport Phase 6.**
+
+- banque allemande système en lecture seule et questions propres au tenant ;
+- test V1 de 18 questions avec instantanés immuables, reprise et score serveur ;
+- suggestion CECRL/groupe distincte de la validation humaine ;
+- niveau courant et historique append-only, mise à jour enseignante limitée à ses groupes ;
+- RBAC, audit, isolation A/B et contention de capacité ;
+- aucun module d’évaluation/notes/bulletins de la phase suivante.
 
 ## Phase 7 — Finance Core
 

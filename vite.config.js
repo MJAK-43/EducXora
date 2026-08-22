@@ -5,6 +5,7 @@ import vue from '@vitejs/plugin-vue';
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), '');
     const clientPort = Number(env.VITE_PORT || 5173);
+    const appUrl = env.APP_URL || 'http://localhost:8080';
 
     return {
         plugins: [
@@ -23,6 +24,9 @@ export default defineConfig(({ mode }) => {
             host: '0.0.0.0',
             port: 5173,
             origin: `http://localhost:${clientPort}`,
+            cors: {
+                origin: appUrl,
+            },
             hmr: {
                 host: 'localhost',
                 clientPort,

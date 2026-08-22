@@ -8,6 +8,8 @@ use App\Domain\Attendance\Models\LearnerAttendance;
 use App\Domain\Learner\Enums\LearnerLanguage;
 use App\Domain\Learner\Enums\LearnerLevel;
 use App\Domain\Learner\Enums\LearnerStatus;
+use App\Domain\Pedagogy\Models\LearnerLevelHistory;
+use App\Domain\Pedagogy\Models\PlacementAttempt;
 use App\Models\Concerns\BelongsToTenant;
 use App\Models\Organization;
 use App\Models\User;
@@ -31,6 +33,7 @@ use Illuminate\Support\Str;
  * @property string|null $email
  * @property LearnerLanguage $language
  * @property LearnerLevel $initial_level
+ * @property LearnerLevel $current_level
  * @property CarbonImmutable $registered_on
  * @property string|null $photo_path
  * @property LearnerStatus $status
@@ -41,7 +44,7 @@ use Illuminate\Support\Str;
  */
 #[Fillable([
     'first_name', 'last_name', 'birth_date', 'phone', 'email', 'language',
-    'initial_level', 'registered_on', 'photo_path', 'status', 'created_by',
+    'initial_level', 'current_level', 'registered_on', 'photo_path', 'status', 'created_by',
     'archived_at', 'archived_by',
 ])]
 final class Learner extends Model
@@ -53,6 +56,7 @@ final class Learner extends Model
     {
         self::creating(function (Learner $learner): void {
             $learner->uuid ??= (string) Str::uuid7();
+            $learner->current_level ??= $learner->initial_level;
         });
     }
 
@@ -84,6 +88,18 @@ final class Learner extends Model
         return $this->hasMany(LearnerAttendance::class);
     }
 
+    /** @return HasMany<PlacementAttempt, $this> */
+    public function placementAttempts(): HasMany
+    {
+        return $this->hasMany(PlacementAttempt::class);
+    }
+
+    /** @return HasMany<LearnerLevelHistory, $this> */
+    public function levelHistory(): HasMany
+    {
+        return $this->hasMany(LearnerLevelHistory::class)->orderByDesc('occurred_at');
+    }
+
     /** @return BelongsTo<User, $this> */
     public function archiver(): BelongsTo
     {
@@ -108,6 +124,7 @@ final class Learner extends Model
             'archived_at' => 'immutable_datetime',
             'language' => LearnerLanguage::class,
             'initial_level' => LearnerLevel::class,
+            'current_level' => LearnerLevel::class,
             'status' => LearnerStatus::class,
         ];
     }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { router, useForm } from '@inertiajs/vue3';
+import { Link, router, useForm } from '@inertiajs/vue3';
 import UiButton from '@/Components/Ui/UiButton.vue';
 import UiSelect from '@/Components/Ui/UiSelect.vue';
 
@@ -73,7 +73,8 @@ function detach(member: Member): void {
                 class="member-card"
             >
                 <div>
-                    <strong>{{ member.full_name }}</strong
+                    <Link :href="`/learners/${member.uuid}/pedagogy`"
+                        ><strong>{{ member.full_name }}</strong></Link
                     ><span>{{ member.phone }} · affecté le {{ member.assigned_at_label }}</span>
                 </div>
                 <button

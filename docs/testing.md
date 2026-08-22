@@ -35,6 +35,21 @@ La suite active totalise 21 tests backend / 77 assertions et 8 tests frontend. P
 
 La validation visuelle réelle à 375, 390, 768, 1024, 1280 et 1440 px ainsi que Safari iOS 13 reste **NOT TESTED**.
 
+## Couverture Phase 6
+
+`PedagogyManagementTest` couvre la banque de questions système et organisation, les permissions, l'isolation tenant, les snapshots immuables, le démarrage et la finalisation des tentatives, le scoring serveur, la suggestion de groupe, la validation humaine, la capacité et l'historique append-only des niveaux. `PlacementScorerTest` couvre les seuils CECRL configurés et leurs frontières.
+
+`PedagogyPages.spec.ts` vérifie les formulaires de questions, le caractère readonly des questions système, le passage du test, le rendu sécurisé du texte, le résultat et l'historique pédagogique.
+
+La suite validée totalise :
+
+- 76 tests Laravel et 523 assertions, dont 17 tests Phase 6 et 92 assertions ;
+- 34 tests Vitest dans 7 fichiers, dont 6 tests Phase 6.
+
+Composer validate, Pint, Larastan, ESLint, Prettier, `vue-tsc`, le build Vite, Composer audit et npm audit sont validés. Les migrations Phase 6 sont validées par `migrate:fresh --force`, `migrate:rollback --force`, puis `migrate --force` sur `eduxora_testing` explicitement ciblée.
+
+La validation visuelle réelle à 375, 390, 768, 1024, 1280 et 1440 px ainsi que Safari iOS 13 reste **NOT TESTED**.
+
 ## Principes
 
 Tester les invariants au niveau le moins coûteux, puis couvrir les frontières réellement risquées. Tous les tests utilisent PostgreSQL pour les comportements qui en dépendent ; SQLite n'est pas un substitut pour FK composites, contraintes d'exclusion, verrouillage ou RLS.
