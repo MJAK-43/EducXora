@@ -37,9 +37,9 @@ return [
             'placement_tests.review', 'learner_levels.view', 'learner_levels.update',
         ],
         'Teacher/Trainer' => [
-            'organization.view', 'users.view', 'group.view', 'schedule.view',
+            'organization.view', 'group.view', 'schedule.view',
             'attendance.view', 'attendance.take', 'attendance.validate',
-            'placement_questions.view', 'placement_tests.view',
+            'placement_tests.view',
             'learner_levels.view', 'learner_levels.update',
         ],
         'Accountant' => [
@@ -54,8 +54,8 @@ return [
             'schedule.view', 'schedule.create', 'schedule.update', 'schedule.cancel',
             'attendance.view', 'attendance.take', 'attendance.validate',
             'attendance.correct', 'attendance.view_reports',
-            'placement_questions.view', 'placement_tests.view',
-            'placement_tests.start', 'placement_tests.complete', 'learner_levels.view',
+            'placement_tests.view', 'placement_tests.start', 'placement_tests.complete',
+            'learner_levels.view',
         ],
     ],
 ];

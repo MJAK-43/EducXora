@@ -162,21 +162,15 @@ function restoreLearner(): void {
         <UiCard class="learner-future">
             <template #header><h2>Parcours de l’apprenant</h2></template>
             <p>
-                Les groupes, le planning, les présences, les évaluations et les paiements seront
-                disponibles dans leurs phases dédiées.
+                Les évaluations détaillées et les paiements seront disponibles dans leurs phases
+                dédiées.
             </p>
             <div
                 class="learner-tabs"
                 aria-label="Fonctionnalités futures"
             >
                 <span
-                    v-for="label in [
-                        'Groupes',
-                        'Planning',
-                        'Présences',
-                        'Évaluations',
-                        'Paiements',
-                    ]"
+                    v-for="label in ['Évaluations', 'Paiements']"
                     :key="label"
                     aria-disabled="true"
                     >{{ label }}</span

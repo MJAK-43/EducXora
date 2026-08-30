@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AttendanceHistoryController;
+use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationController;
@@ -118,6 +119,7 @@ Route::middleware(['auth', 'auth.session', 'active', 'fresh.session'])->group(fu
             Route::patch('/pedagogy/tests/{attemptUuid}/complete', [PlacementTestController::class, 'complete'])->name('pedagogy.tests.complete');
             Route::patch('/pedagogy/tests/{attemptUuid}/review', [PlacementTestController::class, 'review'])->name('pedagogy.tests.review');
             Route::get('/organization/settings', [OrganizationSettingsController::class, 'edit'])->name('organization.settings.edit');
+            Route::get('/organization/audit', AuditLogController::class)->name('organization.audit.index');
             Route::patch('/organization/settings', [OrganizationSettingsController::class, 'update'])->middleware('password.confirm')->name('organization.settings.update');
             Route::get('/organization/users', [OrganizationUserController::class, 'index'])->name('organization.users.index');
             Route::patch('/organization/users/{membership}', [OrganizationUserController::class, 'update'])->name('organization.users.update');

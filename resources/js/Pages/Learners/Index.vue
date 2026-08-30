@@ -66,7 +66,7 @@ function restoreLearner(learner: Learner): void {
 }
 const exportUrl = () => `/learners/export?${new URLSearchParams(filters).toString()}`;
 function paginationLabel(label: string): string {
-    return label.replace('&laquo; Previous', 'Pr?c?dent').replace('Next &raquo;', 'Suivant');
+    return label.replace('&laquo; Previous', 'Précédent').replace('Next &raquo;', 'Suivant');
 }
 </script>
 

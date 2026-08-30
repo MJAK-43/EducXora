@@ -72,8 +72,24 @@ final class PedagogyManagementTest extends TestCase
         );
 
         [$staffOrganization, $staff] = $this->tenantWithUser('Staff');
-        $this->actingAs($staff)->withSession($this->tenantSession($staffOrganization))->get('/pedagogy/questions')->assertOk();
+        $this->actingAs($staff)->withSession($this->tenantSession($staffOrganization))->get('/pedagogy/questions')->assertForbidden();
         $this->actingAs($staff)->withSession($this->tenantSession($staffOrganization))->post('/pedagogy/questions', $this->questionPayload())->assertForbidden();
+    }
+
+    public function test_question_bank_is_denied_to_teacher_and_staff_but_available_to_organization_admin(): void
+    {
+        [$teacherOrganization, $teacher] = $this->tenantWithUser('Teacher/Trainer');
+        [$staffOrganization, $staff] = $this->tenantWithUser('Staff');
+        [$adminOrganization, $admin] = $this->tenantWithUser();
+
+        $this->actingAs($teacher)->withSession($this->tenantSession($teacherOrganization))
+            ->get('/pedagogy/questions')->assertForbidden();
+        $this->actingAs($staff)->withSession($this->tenantSession($staffOrganization))
+            ->get('/pedagogy/questions')->assertForbidden();
+        $this->actingAs($admin)->withSession($this->tenantSession($adminOrganization))
+            ->get('/pedagogy/questions')->assertOk()->assertInertia(
+                fn (Assert $page) => $page->component('Pedagogy/Questions/Index'),
+            );
     }
 
     public function test_attempt_uses_immutable_snapshots_and_records_each_answer_once(): void
@@ -88,6 +104,13 @@ final class PedagogyManagementTest extends TestCase
         $this->setTenant($organization, $membership);
         $attempt = PlacementAttempt::query()->sole();
         self::assertSame(18, $attempt->question_count);
+        $this->actingAs($staff)->withSession($session)->get('/pedagogy/tests/'.$attempt->uuid)
+            ->assertOk()->assertInertia(fn (Assert $page) => $page
+            ->component('Pedagogy/Placement/Take')
+            ->has('attempt.questions', 18)
+            ->missing('attempt.questions.0.correct_choice_snapshot')
+            ->missing('attempt.questions.0.is_correct'));
+        $this->setTenant($organization, $membership);
         $snapshot = PlacementAttemptQuestion::query()->where('attempt_id', $attempt->getKey())->orderBy('position')->firstOrFail();
         $source = PlacementQuestion::query()->findOrFail($snapshot->source_question_id);
         $originalPrompt = $snapshot->prompt_snapshot;
@@ -166,8 +189,13 @@ final class PedagogyManagementTest extends TestCase
         $otherGroup = Group::factory()->create(['level' => LearnerLevel::A1, 'teacher_membership_id' => $otherTeacher->getKey()]);
         GroupLearnerAssignment::query()->create(['group_id' => $ownGroup->getKey(), 'learner_id' => $ownLearner->getKey(), 'assigned_at' => now()]);
         GroupLearnerAssignment::query()->create(['group_id' => $otherGroup->getKey(), 'learner_id' => $otherLearner->getKey(), 'assigned_at' => now()]);
+        $attempt = $this->completedAttempt($ownLearner, $manager, LearnerLevel::A2);
         $session = $this->tenantSession($organization);
 
+        $this->actingAs($teacher->user)->withSession($session)->get('/pedagogy/tests/'.$attempt->uuid)
+            ->assertOk()->assertInertia(fn (Assert $page) => $page
+            ->component('Pedagogy/Placement/Result')
+            ->missing('attempt.questions.0.correct_choice_snapshot'));
         $this->actingAs($teacher->user)->withSession($session)->patch('/learners/'.$ownLearner->uuid.'/level', ['level' => 'A2', 'reason' => 'Progression confirmée en classe.'])->assertRedirect();
         $this->actingAs($teacher->user)->withSession($session)->patch('/learners/'.$otherLearner->uuid.'/level', ['level' => 'A2', 'reason' => 'Tentative sur un autre groupe.'])->assertForbidden();
         $this->setTenant($organization, $managerMembership);

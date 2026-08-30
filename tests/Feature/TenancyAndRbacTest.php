@@ -8,6 +8,7 @@ use App\Enums\OrganizationStatus;
 use App\Models\UserInvitation;
 use App\Support\Tenancy\TenantContext;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use LogicException;
 use Tests\Concerns\BuildsPhaseTwoTenancy;
 use Tests\TestCase;
@@ -54,6 +55,20 @@ final class TenancyAndRbacTest extends TestCase
         $this->actingAs($admin)->withSession($this->tenantSession($adminOrganization))
             ->post('/organization/roles', ['name' => 'Custom', 'permissions' => ['users.view']])->assertRedirect();
         $this->assertDatabaseHas('roles', ['organization_id' => $adminOrganization->getKey(), 'name' => 'Custom']);
+    }
+
+    public function test_teacher_cannot_open_user_directory_and_navigation_capabilities_are_restricted(): void
+    {
+        [$organization, $teacher] = $this->tenantWithUser('Teacher/Trainer');
+        $client = $this->actingAs($teacher)->withSession($this->tenantSession($organization));
+
+        $client->get('/organization/users')->assertForbidden();
+        $client->get('/dashboard')->assertOk()->assertInertia(fn (Assert $page) => $page
+            ->where('auth.canViewUsers', false)
+            ->where('auth.canViewQuestionBank', false)
+            ->where('auth.canViewGroups', true)
+            ->where('auth.canViewSchedule', true)
+            ->where('auth.canViewAttendance', true));
     }
 
     public function test_suspended_organization_is_blocked(): void

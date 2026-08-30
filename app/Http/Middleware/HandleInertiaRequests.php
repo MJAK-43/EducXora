@@ -36,7 +36,17 @@ final class HandleInertiaRequests extends Middleware
                 'canViewGroups' => (bool) $request->user()?->can('group.view'),
                 'canViewSchedule' => (bool) $request->user()?->can('schedule.view'),
                 'canViewAttendance' => (bool) $request->user()?->can('attendance.view'),
-                'canViewPedagogy' => (bool) $request->user()?->can('placement_questions.view'),
+                'canViewQuestionBank' => (bool) $request->user()?->can('placement_questions.view'),
+                'canViewUsers' => (bool) $request->user()?->can('users.view'),
+                'canViewRoles' => (bool) $request->user()?->can('roles.view'),
+                'canViewOrganization' => (bool) $request->user()?->can('organization.view'),
+                'canViewAudit' => (bool) $request->user()?->can('audit.view'),
+                'roleNames' => $request->user() && $request->session()->get('active_organization_uuid')
+                    ? OrganizationMembership::query()->with('roles:id,name')
+                        ->where('user_id', $request->user()->getKey())
+                        ->whereHas('organization', fn ($query) => $query->where('uuid', $request->session()->get('active_organization_uuid')))
+                        ->first()?->roles->pluck('name')->values() ?? []
+                    : [],
                 'organizations' => $request->user()
                     ? OrganizationMembership::query()->with('organization')
                         ->where('user_id', $request->user()->getKey())

@@ -9,12 +9,14 @@
     border-right: 1px solid var(--color-border);
     background: #101a2e;
     color: #dbe5f6;
+    visibility: hidden;
     transform: translateX(-100%);
     transition:
         transform var(--transition-base),
         width var(--transition-base);
 }
 .app-sidebar--mobile-open {
+    visibility: visible;
     transform: translateX(0);
 }
 .app-sidebar__inner {
@@ -353,6 +355,7 @@
 
 @media (min-width: 64rem) {
     .app-sidebar {
+        visibility: visible;
         transform: translateX(0);
     }
     .app-layout--collapsed .app-sidebar {
